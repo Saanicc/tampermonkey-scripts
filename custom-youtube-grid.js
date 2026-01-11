@@ -154,6 +154,11 @@
     resetToDefault();
   });
 
-  applyStaticFixes();
-  updateGridCSS();
+  new MutationObserver(function (mutations) {
+    if (document.getElementById("contents")) {
+      applyStaticFixes();
+      updateGridCSS();
+      this.disconnect();
+    }
+  }).observe(document, { childList: true, subtree: true });
 })();

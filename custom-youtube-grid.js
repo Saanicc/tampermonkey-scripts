@@ -154,7 +154,7 @@
     resetToDefault();
   });
 
-  new MutationObserver(function (mutations) {
+  new MutationObserver(function () {
     if (document.getElementById("contents")) {
       applyStaticFixes();
       updateGridCSS();

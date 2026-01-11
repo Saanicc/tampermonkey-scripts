@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name         YouTube Grid Changer (Multi-Res)
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/Saanicc/tampermonkey-scripts/blob/master/custom-youtube-grid.js
 // @version      2026-01-11
 // @description  Allows user to change the number of videos per row on YouTube Home for various screen sizes
 // @author       Saanicc
 // @match        https://www.youtube.com/*
-// @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
 // @run-at       document-start
+// @updateURL    https://raw.githubusercontent.com/Saanicc/tampermonkey-scripts/refs/heads/master/custom-youtube-grid.js
+// @downloadURL  https://raw.githubusercontent.com/Saanicc/tampermonkey-scripts/refs/heads/master/custom-youtube-grid.js
 // ==/UserScript==
 
 (function () {

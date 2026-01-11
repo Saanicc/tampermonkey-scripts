@@ -20,10 +20,29 @@
   const yt_row_2561_3000 = "yt_row_2561_3000";
   const yt_row_3000_plus = "yt_row_3000_plus";
 
-  let val_1700 = GM_getValue(yt_row_1700_2100, 4);
-  let val_2100 = GM_getValue(yt_row_2101_2560, 5);
-  let val_2500 = GM_getValue(yt_row_2561_3000, 6);
-  let val_3000 = GM_getValue(yt_row_3000_plus, 7);
+  const DEFAULT_NUMBER_OF_ROWS = {
+    yt_row_1700_2100: 4,
+    yt_row_2101_2560: 5,
+    yt_row_2561_3000: 6,
+    yt_row_3000_plus: 7,
+  };
+
+  let val_1700 = GM_getValue(
+    yt_row_1700_2100,
+    DEFAULT_NUMBER_OF_ROWS[yt_row_1700_2100]
+  );
+  let val_2100 = GM_getValue(
+    yt_row_2101_2560,
+    DEFAULT_NUMBER_OF_ROWS[yt_row_2101_2560]
+  );
+  let val_2500 = GM_getValue(
+    yt_row_2561_3000,
+    DEFAULT_NUMBER_OF_ROWS[yt_row_2561_3000]
+  );
+  let val_3000 = GM_getValue(
+    yt_row_3000_plus,
+    DEFAULT_NUMBER_OF_ROWS[yt_row_3000_plus]
+  );
 
   function applyStaticFixes() {
     const styleId = "yt-grid-static-fixes";
@@ -87,6 +106,15 @@
         `;
   }
 
+  function updateCurrentValue(storageKey, number) {
+    GM_setValue(storageKey, number);
+
+    if (storageKey === yt_row_1700_2100) val_1700 = number;
+    if (storageKey === yt_row_2101_2560) val_2100 = number;
+    if (storageKey === yt_row_2561_3000) val_2500 = number;
+    if (storageKey === yt_row_3000_plus) val_3000 = number;
+  }
+
   function createMenu(label, currentVal, storageKey) {
     GM_registerMenuCommand(label, function () {
       const input = prompt(
@@ -96,22 +124,34 @@
       const number = parseInt(input, 10);
 
       if (!isNaN(number) && number > 0) {
-        GM_setValue(storageKey, number);
-
-        if (storageKey === yt_row_1700_2100) val_1700 = number;
-        if (storageKey === yt_row_2101_2560) val_2100 = number;
-        if (storageKey === yt_row_2561_3000) val_2500 = number;
-        if (storageKey === yt_row_3000_plus) val_3000 = number;
-
+        updateCurrentValue(storageKey, number);
         updateGridCSS();
       }
     });
+  }
+
+  function resetToDefault() {
+    const input = prompt(
+      "Are you sure you want to reset to default?\nEnter 'YES' to confirm."
+    );
+
+    if (input === "YES") {
+      Object.keys(DEFAULT_NUMBER_OF_ROWS).map((objKey) => {
+        const defaultValue = DEFAULT_NUMBER_OF_ROWS[objKey];
+        updateCurrentValue(objKey, defaultValue);
+        updateGridCSS();
+      });
+    }
   }
 
   createMenu("Set Row Count (1700px - 2100px)", val_1700, yt_row_1700_2100);
   createMenu("Set Row Count (2101px - 2560px)", val_2100, yt_row_2101_2560);
   createMenu("Set Row Count (2561px - 3000px)", val_2500, yt_row_2561_3000);
   createMenu("Set Row Count (> 3000px)", val_3000, yt_row_3000_plus);
+
+  GM_registerMenuCommand("Reset to default", () => {
+    resetToDefault();
+  });
 
   applyStaticFixes();
   updateGridCSS();

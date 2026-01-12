@@ -5,6 +5,7 @@
 // @description  Allows user to change the number of videos per row on YouTube Home for various screen sizes
 // @author       Saanicc
 // @match        https://www.youtube.com/*
+// @exclude      https://www.youtube.com/@*
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand

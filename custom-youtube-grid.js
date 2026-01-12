@@ -5,7 +5,6 @@
 // @description  Allows user to change the number of videos per row on YouTube Home for various screen sizes
 // @author       Saanicc
 // @match        https://www.youtube.com/*
-// @exclude      https://www.youtube.com/@*
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
@@ -46,8 +45,11 @@
     DEFAULT_NUMBER_OF_ROWS[yt_row_3000_plus]
   );
 
+  const STATIC_STYLE_ID = "yt-grid-static-fixes";
+  const DYNAMIC_STYLE_ID = "yt-grid-dynamic-settings";
+
   function applyStaticFixes() {
-    const styleId = "yt-grid-static-fixes";
+    const styleId = STATIC_STYLE_ID;
     if (document.getElementById(styleId)) return;
 
     const styleTag = document.createElement("style");
@@ -73,7 +75,7 @@
   }
 
   function updateGridCSS() {
-    const styleId = "yt-grid-dynamic-settings";
+    const styleId = DYNAMIC_STYLE_ID;
     let styleTag = document.getElementById(styleId);
 
     if (!styleTag) {
@@ -117,6 +119,11 @@
     if (storageKey === yt_row_3000_plus) val_3000 = number;
   }
 
+  function isTargetPage() {
+    const path = window.location.pathname;
+    return path === "/" || path === "/feed/subscriptions";
+  }
+
   function createMenu(label, currentVal, storageKey) {
     GM_registerMenuCommand(label, function () {
       const input = prompt(
@@ -127,7 +134,9 @@
 
       if (!isNaN(number) && number > 0) {
         updateCurrentValue(storageKey, number);
-        updateGridCSS();
+        if (isTargetPage()) {
+          updateGridCSS();
+        }
       }
     });
   }
@@ -143,6 +152,25 @@
         updateCurrentValue(objKey, defaultValue);
         updateGridCSS();
       });
+      if (isTargetPage()) {
+        updateGridCSS();
+      }
+    }
+  }
+
+  function removeGridStyles() {
+    const staticStyle = document.getElementById(STATIC_STYLE_ID);
+    const dynamicStyle = document.getElementById(DYNAMIC_STYLE_ID);
+    if (staticStyle) staticStyle.remove();
+    if (dynamicStyle) dynamicStyle.remove();
+  }
+
+  function checkAndRun() {
+    if (isTargetPage()) {
+      applyStaticFixes();
+      updateGridCSS();
+    } else {
+      removeGridStyles();
     }
   }
 
@@ -155,11 +183,9 @@
     resetToDefault();
   });
 
-  new MutationObserver(function () {
-    if (document.getElementById("contents")) {
-      applyStaticFixes();
-      updateGridCSS();
-      this.disconnect();
-    }
-  }).observe(document, { childList: true, subtree: true });
+  checkAndRun();
+
+  document.addEventListener("yt-navigate-finish", function () {
+    checkAndRun();
+  });
 })();
